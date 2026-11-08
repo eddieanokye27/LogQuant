@@ -7,13 +7,15 @@ name = "logquant"
 version = "0.1.0"
 description = "Offline log ingestion and diagnostic analysis prototype"
 requires-python = ">=3.11"
-dependencies = ["pydantic==2.10.3"]
+dependencies = ["pydantic==2.10.3", "scikit-learn==1.7.2", "numpy==2.3.5", "scipy==1.16.3"]
 
 [project.optional-dependencies]
 dev = ["pytest==8.3.4"]
 
 [project.scripts]
 logquant-ingest = "logquant.ingestion.cli:main"
+logquant-features = "logquant.features.cli:main"
+logquant-detector = "logquant.detection.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

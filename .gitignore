@@ -16,3 +16,10 @@ AGENTS.override.md
 # Credentials and local configuration
 .env
 .env.*
+
+# Local analysis environment, generated ingestion artifacts and caches
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+/results/

@@ -1,0 +1,18 @@
+# Codex instructions, configuration, and session files
+AGENTS.md
+AGENTS.override.md
+.codex/
+.codex-log/
+.agents/
+
+# Local project context and handoff documents
+/docs/architecture.md
+/docs/proposal.md
+/docs/status.md
+/docs/status-history/
+/docs/validation/
+/project_history/
+
+# Credentials and local configuration
+.env
+.env.*

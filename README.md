@@ -4,8 +4,9 @@ An Autonomous Multi-Agent System for Log-Based Root Cause Analysis and Anomaly D
 
 The local evaluation fixture, structured diagnostic ingestion, feature-only
 normalization, deterministic 30-second windows, and healthy-only TF-IDF/Isolation
-Forest fitting with frozen raw scoring are implemented. Research collection,
-threshold selection, evidence selection, agents and the dashboard remain future work.
+Forest fitting, development-only threshold selection and frozen alert grouping
+are implemented. Research collection, evidence bundles, agents and the dashboard
+remain future work.
 See [current status](docs/status.md) and the [architecture](docs/architecture.md).
 
 For ingestion, use Python 3.11+ in its own environment (this Mac has Python 3.13
@@ -50,4 +51,6 @@ other platforms need a separate reviewed lock. See the [detector contract and
 fit/score commands](docs/detection.md) for a synthetic-only demonstration,
 whole-run eligibility checks, null scores for missing information, and trusted
 model loading. Higher anomaly scores are more unusual, not probabilities;
-no alert threshold or research model has been fitted.
+no research threshold or research model has been fitted. The separate
+[threshold policy and CLI](docs/thresholds.md) demonstrate selection, retained
+infeasible outcomes and frozen classification using synthetic fixtures only.

@@ -16,6 +16,7 @@ dev = ["pytest==8.3.4"]
 logquant-ingest = "logquant.ingestion.cli:main"
 logquant-features = "logquant.features.cli:main"
 logquant-detector = "logquant.detection.cli:main"
+logquant-threshold = "logquant.thresholds.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -2,8 +2,14 @@
 
 This milestone implements fitting and raw anomaly scoring, using the existing
 [ingestion](ingestion.md) and [feature/window](features.md) contracts unchanged.
-Only synthetic test models have been fitted. No alert threshold, research model,
-performance result, evidence selector or evaluation metric is supplied.
+Only synthetic test models have been fitted. This raw-scoring module supplies
+no alert threshold, research model, performance result or evidence selector.
+
+The subsequent [threshold milestone](thresholds.md) now provides separate
+development calibration and frozen alert classification. Raw detector artifacts
+and scores retain this contract, including their null `alert_threshold`; the
+separate JSON threshold artifact supplies the decision rule. Only synthetic
+thresholds have been calibrated.
 
 ## Boundary and training eligibility
 
@@ -117,8 +123,9 @@ line IDs. Empty windows remain present. Unknown leading/trailing event-free
 periods are never invented. Edge scores remain coverage-unknown, not full
 30-second exposure measurements. `alert_threshold` is explicitly null.
 
-Threshold selection is a separate future development-only step; freeze it before
-final testing. Neither synthetic score ordering nor the library's default cutoff
+Threshold selection uses the separate development-only stage; an actual research
+threshold remains to be selected and frozen before final testing. Neither
+synthetic score ordering nor the library's default cutoff
 demonstrates fault detection accuracy.
 
 ## Artifacts and environment

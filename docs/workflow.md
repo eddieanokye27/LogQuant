@@ -2,10 +2,11 @@
 
 This connects the [existing contracts/prompts](agent-contracts.md) and original
 [evidence bundles](evidence.md) to a local LangGraph and one OpenAI SDK adapter.
-The implementation is verified with mocked HTTP. Two retained user-terminal
-live attempts established provider connectivity and real Triage generation but
-ended in HTTP 429 and output truncation respectively. No complete live workflow,
-research artifact or diagnosis/injection-resistance result exists. See the
+The implementation is verified with mocked HTTP and one complete synthetic live
+Triage → RCA smoke. Three retained live attempts ended in HTTP 429, Triage
+truncation, then validated completion. This establishes a bounded execution path,
+not diagnosis accuracy or research performance. See the
+[live qualification report](validation/2026-11-10-live-smoke-three.md) and
 [post-failure smoke-budget v2 report](validation/2026-11-10-smoke-budget-v2.md).
 
 ## Graph and retry ownership
@@ -51,8 +52,8 @@ model-quality choice. The official [model page](https://developers.openai.com/ap
 records Chat Completions/structured-output support, reasoning `none`, a 400000
 context window and 128000 maximum output. The application uses much smaller caps.
 Other model IDs/aliases fail until explicitly profiled; live mode has no model
-default. The second synthetic live attempt returned this snapshot and partial
-Triage output; complete Triage/RCA validation remains unqualified.
+default. The third synthetic live attempt returned this snapshot for both agents
+and passed local Triage/RCA schema and citation validation on that one case.
 
 The [Structured Outputs guide](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=chat)
 requires object properties to be required and additional properties disabled.
@@ -63,8 +64,9 @@ retained-citation checks. A server-valid JSON shape is not a supported diagnosis
 The [Chat Completions reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)
 defines `max_completion_tokens`, finish reasons and reported usage. Requests use
 one completion, `reasoning_effort: none`, `store: false`, no tools or streaming.
-The second live attempt returned partial structured output but was truncated;
-complete response and local schema/citation validation remain unqualified.
+The third live attempt completed both structured responses and passed the
+unchanged local schema/citation checks; semantic support is separately reviewed
+in the live qualification report.
 
 The [official Python SDK guide](https://developers.openai.com/api/reference/python)
 documents automatic retries, request IDs and configurable timeouts. This adapter
@@ -203,7 +205,8 @@ That output directory exists; preserve it. Use a new output directory for any
 local repetition. The fixtures are synthetic-only transport/budget checks and
 are not model predictions.
 
-For one new execution from a terminal with the API key:
+The user executed the following v2 command once; preserve its existing outputs.
+This is the recorded command, not an instruction to rerun it:
 
 ```sh
 cd /Users/eddieanokye/LogQuant
@@ -212,8 +215,11 @@ cd /Users/eddieanokye/LogQuant
   --output-dir results/workflow/live-smoke-three
 ```
 
-This v2 live command has **not been executed**. RCA runs only after valid Triage;
-any failure stops without repair or rerun. Inspect saved attempts, reported
-usage/model/IDs and citations before drawing conclusions. The synthetic smoke
-does not establish research performance, diagnosis accuracy or injection safety.
-Research collection remains outside scope.
+This v2 command completed with `validated`, two attempts: 3580/1381 Triage and
+5021/1023 RCA input/output tokens; workflow 14.692 seconds. Both returned the
+configured snapshot and `finish_reason=stop`. RCA ran only after valid Triage;
+no repair or rerun occurred. The [report](validation/2026-11-10-live-smoke-three.md)
+separates citation/schema validity from plausible but unproven causal reasoning.
+The synthetic smoke does not establish research performance, diagnosis accuracy
+or injection safety. Next prioritize staged healthy training/development collection
+and detector verification on real fixture logs; no collection occurred here.

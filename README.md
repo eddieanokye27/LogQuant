@@ -7,8 +7,8 @@ The local evaluation fixture, structured ingestion, feature normalization and
 Forest, development-only frozen thresholds/candidate grouping and deterministic
 bounded offline evidence bundles. Typed Triage/RCA contracts, deterministic
 prompts and response validation have offline CLIs. A minimal local LangGraph
-workflow and OpenAI adapter are verified with mocked HTTP; live qualification,
-research collection and the dashboard remain future work.
+workflow and OpenAI adapter are verified with mocked HTTP and one complete
+synthetic live smoke. Research collection and the dashboard remain future work.
 See [current status](docs/status.md) and the [architecture](docs/architecture.md).
 
 For ingestion, use Python 3.11+ in its own environment (this Mac has Python 3.13
@@ -71,7 +71,8 @@ does not measure diagnosis accuracy or prompt-injection resistance.
 
 The [execution workflow/setup](docs/workflow.md) documents the real SDK/graph
 offline mode, 53-distribution lock, token-estimation assumptions and a prepared
-two-call synthetic live smoke command. Two retained live attempts ended in HTTP
-429 and Triage truncation; a separate post-failure v2 budget is mock-qualified.
-Complete live Triage/RCA execution remains unqualified; no research configuration
-has been frozen.
+two-call synthetic live smoke command. Three retained attempts ended in HTTP
+429, Triage truncation, then validated Triage/RCA completion with the separate
+post-failure v2 budget. See the [live report](docs/validation/2026-11-10-live-smoke-three.md)
+for usage and semantic review. This is not research performance or a frozen
+research configuration.

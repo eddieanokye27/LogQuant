@@ -17,6 +17,8 @@ logquant-ingest = "logquant.ingestion.cli:main"
 logquant-features = "logquant.features.cli:main"
 logquant-detector = "logquant.detection.cli:main"
 logquant-threshold = "logquant.thresholds.cli:main"
+logquant-evidence = "logquant.evidence.cli:main"
+logquant-agents-mock = "logquant.agents.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

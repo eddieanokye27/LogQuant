@@ -2,11 +2,12 @@
 
 An Autonomous Multi-Agent System for Log-Based Root Cause Analysis and Anomaly Detection.
 
-The local evaluation fixture, structured diagnostic ingestion, feature-only
-normalization, deterministic 30-second windows, and healthy-only TF-IDF/Isolation
-Forest fitting, development-only threshold selection and frozen alert grouping
-are implemented. Research collection, evidence bundles, agents and the dashboard
-remain future work.
+The local evaluation fixture, structured ingestion, feature normalization and
+30-second windows are implemented. Analysis supports healthy-only TF-IDF/Isolation
+Forest, development-only frozen thresholds/candidate grouping and deterministic
+bounded offline evidence bundles. Typed Triage/RCA contracts, deterministic
+prompts and response validation now have a mock-only CLI. Research collection,
+live model/LangGraph integration and the dashboard remain future work.
 See [current status](docs/status.md) and the [architecture](docs/architecture.md).
 
 For ingestion, use Python 3.11+ in its own environment (this Mac has Python 3.13
@@ -54,3 +55,14 @@ model loading. Higher anomaly scores are more unusual, not probabilities;
 no research threshold or research model has been fitted. The separate
 [threshold policy and CLI](docs/thresholds.md) demonstrate selection, retained
 infeasible outcomes and frozen classification using synthetic fixtures only.
+
+The [evidence contract and CLI](docs/evidence.md) select original diagnostic
+records around frozen candidate groups, with up to 60 seconds of context per
+side, exact per-bundle byte/record budgets, stable citations and separate omission
+audits. The synthetic demonstration uses explicitly manually assigned scores;
+no LLM calls or research experiments are involved.
+
+See [offline agent contracts and commands](docs/agent-contracts.md) for strict
+status/rank/citation validation, curated omission summaries, versioned prompts,
+explicit input/output budgets and preserved repair attempts. Mock validation
+does not measure diagnosis accuracy or prompt-injection resistance.

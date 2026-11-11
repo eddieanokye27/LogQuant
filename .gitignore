@@ -19,6 +19,7 @@ AGENTS.override.md
 
 # Local analysis environment, generated ingestion artifacts and caches
 .venv/
+.analysis-cache/
 __pycache__/
 .pytest_cache/
 *.egg-info/

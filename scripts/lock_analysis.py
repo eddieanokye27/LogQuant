@@ -4,6 +4,7 @@ Run only in a reviewed analysis environment. The local editable project is
 installed separately with --no-deps --no-build-isolation after this lock.
 """
 import email.parser
+import argparse
 import hashlib
 import importlib.metadata
 import json
@@ -17,8 +18,12 @@ import zipfile
 
 def main() -> None:
     root=Path(__file__).resolve().parents[1]
-    destination=root/"requirements-analysis.lock"
-    info_path=root/"analysis-lock-info.json"
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--output-dir",type=Path,default=root)
+    output=parser.parse_args().output_dir
+    output.mkdir(parents=True,exist_ok=True)
+    destination=output/"requirements-analysis.lock"
+    info_path=output/"analysis-lock-info.json"
     if destination.exists() or info_path.exists():
         raise SystemExit("Refusing to overwrite an analysis lock; review/version any replacement explicitly")
     versions={d.metadata["Name"].lower().replace("_","-"):d.version for d in importlib.metadata.distributions()

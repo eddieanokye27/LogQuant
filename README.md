@@ -6,8 +6,9 @@ The local evaluation fixture, structured ingestion, feature normalization and
 30-second windows are implemented. Analysis supports healthy-only TF-IDF/Isolation
 Forest, development-only frozen thresholds/candidate grouping and deterministic
 bounded offline evidence bundles. Typed Triage/RCA contracts, deterministic
-prompts and response validation now have a mock-only CLI. Research collection,
-live model/LangGraph integration and the dashboard remain future work.
+prompts and response validation have offline CLIs. A minimal local LangGraph
+workflow and OpenAI adapter are verified with mocked HTTP; live qualification,
+research collection and the dashboard remain future work.
 See [current status](docs/status.md) and the [architecture](docs/architecture.md).
 
 For ingestion, use Python 3.11+ in its own environment (this Mac has Python 3.13
@@ -17,6 +18,7 @@ at `/opt/anaconda3/bin/python`; the system Python 3.9 is insufficient):
 /opt/anaconda3/bin/python -m venv .venv
 .venv/bin/python -m pip install --require-hashes --no-deps -r requirements-analysis.lock
 .venv/bin/python -m pip install --no-deps --no-build-isolation -e .
+.venv/bin/python scripts/cache_analysis_tokenizer.py
 .venv/bin/python -m pytest -q
 .venv/bin/logquant-ingest \
   logquant-fixture/validation-runs/79cc295efae946348240d6893749d1fc/30da5d5ed82e493d8669c78b8631df02/diagnostic \
@@ -47,7 +49,7 @@ See the [feature/window contract](docs/features.md) for explicit normalization
 rules, epoch alignment, empty windows and unknown collection-edge coverage.
 These artifacts do not contain TF-IDF vectors or anomaly scores.
 
-The complete analysis lock targets Python 3.13.5 on Apple Silicon/macOS 14+;
+The complete analysis lock targets Python 3.13.5 on Apple Silicon/macOS 15+;
 other platforms need a separate reviewed lock. See the [detector contract and
 fit/score commands](docs/detection.md) for a synthetic-only demonstration,
 whole-run eligibility checks, null scores for missing information, and trusted
@@ -66,3 +68,10 @@ See [offline agent contracts and commands](docs/agent-contracts.md) for strict
 status/rank/citation validation, curated omission summaries, versioned prompts,
 explicit input/output budgets and preserved repair attempts. Mock validation
 does not measure diagnosis accuracy or prompt-injection resistance.
+
+The [execution workflow/setup](docs/workflow.md) documents the real SDK/graph
+offline mode, 53-distribution lock, token-estimation assumptions and a prepared
+two-call synthetic live smoke command. Two retained live attempts ended in HTTP
+429 and Triage truncation; a separate post-failure v2 budget is mock-qualified.
+Complete live Triage/RCA execution remains unqualified; no research configuration
+has been frozen.

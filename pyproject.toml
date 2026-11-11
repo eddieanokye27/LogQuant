@@ -7,7 +7,7 @@ name = "logquant"
 version = "0.1.0"
 description = "Offline log ingestion and diagnostic analysis prototype"
 requires-python = ">=3.11"
-dependencies = ["pydantic==2.10.3", "scikit-learn==1.7.2", "numpy==2.3.5", "scipy==1.16.3"]
+dependencies = ["pydantic==2.10.3", "scikit-learn==1.7.2", "numpy==2.3.5", "scipy==1.16.3", "openai==3.49.0", "langgraph==1.2.20", "tiktoken==0.14.0", "httpx2==2.16.0"]
 
 [project.optional-dependencies]
 dev = ["pytest==8.3.4"]
@@ -19,6 +19,7 @@ logquant-detector = "logquant.detection.cli:main"
 logquant-threshold = "logquant.thresholds.cli:main"
 logquant-evidence = "logquant.evidence.cli:main"
 logquant-agents-mock = "logquant.agents.cli:main"
+logquant-agents-run = "logquant.agents.run_cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

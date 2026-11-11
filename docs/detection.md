@@ -145,15 +145,17 @@ dependency/Python/platform, analysis-lock or implementation mismatches before
 deserialization; this intentionally prevents silent cross-version reuse. Source
 changes require reviewed refitting rather than bypassing compatibility checks.
 
-The complete 17-distribution analysis/build/test lock is
+The current complete 53-distribution analysis/build/test lock is
 `requirements-analysis.lock`; `analysis-lock-info.json` records resolved wheels
 and hashes. It targets CPython 3.13.5, Apple Silicon, with numerical wheels
-requiring macOS 14+. It was qualified on macOS 15.5. Recreate from repository root:
+requiring macOS 15+ after the graph/SDK additions. It was qualified on macOS 15.5.
+The prior analysis lock is archived in `dependency-history/`. Recreate from repository root:
 
 ```sh
 /opt/anaconda3/bin/python -m venv .venv
 .venv/bin/python -m pip install --require-hashes --no-deps -r requirements-analysis.lock
 .venv/bin/python -m pip install --no-deps --no-build-isolation -e .
+.venv/bin/python scripts/cache_analysis_tokenizer.py
 .venv/bin/python -m pip check
 .venv/bin/python -m pytest -q
 ```

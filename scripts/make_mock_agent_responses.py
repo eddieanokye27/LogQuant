@@ -28,7 +28,7 @@ def example_responses(payload: EvidencePayload) -> tuple[dict, dict]:
     return triage, rca
 
 
-def create_responses(evidence: Path, output: Path) -> None:
+def create_responses(evidence: Path, output: Path, *, http_fixture: bool = False) -> None:
     report = EvidenceReport.model_validate_json((evidence/"evidence-report.json").read_bytes())
     if report.input_usage != "synthetic-test-only": raise ValueError("Only synthetic evidence is permitted")
     payloads = [EvidencePayload.model_validate_json(line) for line in (evidence/"evidence.jsonl").read_bytes().splitlines()]
@@ -38,6 +38,11 @@ def create_responses(evidence: Path, output: Path) -> None:
         candidates[payload.candidate_id] = MockResponses(triage=(MockReply(output=json.dumps(triage)),),
                                                        rca=(MockReply(output=json.dumps(rca)),))
     fixture = MockFixture(schema_version=1, purpose="synthetic-test-only", candidates=candidates)
+    if http_fixture:
+        from logquant.agents.transport_mock import HTTPFixture, HTTPEvent
+        fixture = HTTPFixture(schema_version=1,purpose="synthetic-test-only",candidates={key:{
+            stage:tuple(HTTPEvent(output=reply.output) for reply in getattr(value,stage))
+            for stage in ("triage","rca")} for key,value in candidates.items()})
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("x") as stream: stream.write(fixture.model_dump_json(indent=2)+"\n")
 
@@ -46,5 +51,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("evidence_directory", type=Path)
     parser.add_argument("output", type=Path)
+    parser.add_argument("--http", action="store_true", help="Generate mocked HTTP events for the actual SDK/LangGraph path")
     args = parser.parse_args()
-    create_responses(args.evidence_directory, args.output)
+    create_responses(args.evidence_directory, args.output, http_fixture=args.http)

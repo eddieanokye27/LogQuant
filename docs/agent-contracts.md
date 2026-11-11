@@ -1,8 +1,13 @@
 # Offline two-agent contracts and prompt policy v1
 
-This milestone defines schemas, validation, versioned deterministic requests and
-mock-only bounded attempts. It does not integrate a model provider or LangGraph.
+This contract layer defines schemas, validation, versioned deterministic requests
+and mock-only bounded attempts, independently of provider/LangGraph execution.
 No diagnosis accuracy, factual support or prompt-injection resistance is measured.
+
+The subsequent [execution milestone](workflow.md) now connects these unchanged
+contracts to LangGraph and an OpenAI adapter, verified with mocked HTTP only.
+The contract-only CLI below remains available; real model/schema/token usage
+qualification is still pending.
 
 ## Response and citation policy
 
@@ -49,7 +54,8 @@ failures, never healthy results or coerced diagnoses.
 A counter adapter must count the complete provider-formatted request including
 messages, role/framing overhead, response schema and special tokens, and count
 output text using the selected model's tokenizer. Its identity and counting unit
-are recorded. No provider/model/tokenizer is selected here. The offline counter
+are recorded. This provider-neutral layer selects no model; execution v1 supplies
+a separately profiled counter. The original offline counter
 uses deterministic lexical mock units for tests only; those units are NOT model
 tokens and are not derived from UTF-8 byte counts. Live integration must supply
 and qualify an actual model counter and context capacity.
@@ -154,7 +160,8 @@ candidates; exit 1 rejects input/config/output; exit **3** means retained
 processing failures. Missing/failed output is never interpreted as healthy.
 Individual files are atomic; output groups are not crash-atomic transactions.
 
-No provider SDK, tokenizer dependency or LangGraph dependency was added. Future
+The original offline-contract milestone added no SDK/tokenizer/graph dependency.
+The separate execution milestone now supplies those dependencies. Live
 integration must qualify model-specific counting, structured-output schema
 compatibility, real cancellation/timeouts and usage reporting. Prompts and schema
 tests do not establish semantic correctness, causal support or injection safety.

@@ -1,0 +1,10 @@
+{
+  "context_limit_tokens": 16384,
+  "max_input_tokens": 10000,
+  "triage_output_tokens": 512,
+  "rca_output_tokens": 768,
+  "triage_rca_reserve_tokens": 1024,
+  "timeout_seconds": 30.0,
+  "max_repair_attempts": 0,
+  "transport_retries": 0
+}

@@ -1,0 +1,7 @@
+services:
+  app:
+    image: logquant-fixture-app@sha256:3650cea4c3ddb2eca1a8d26f8cba09ac60340e348ec221bfc8f6599c646bc338
+  harness:
+    image: logquant-fixture-harness@sha256:8c80aea13abb2a1050881ab984f421a65d9e6c3fa5e0fa6b429559a385fed2ce
+  db:
+    image: postgres@sha256:3267c505060a0052e5aa6e5175a7b41ab6b04da2f8c4540fc6e98a37210aa2d3

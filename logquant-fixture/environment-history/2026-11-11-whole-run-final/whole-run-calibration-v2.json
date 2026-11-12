@@ -1,0 +1,4 @@
+{
+  "minimum_faulty_run_recall": 0.8,
+  "maximum_healthy_candidates": 0
+}

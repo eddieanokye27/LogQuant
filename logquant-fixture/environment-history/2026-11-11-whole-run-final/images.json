@@ -1,0 +1,25 @@
+{
+  "archive": "logquant-fixture/environment-history/2026-11-11-whole-run-final/images.tar",
+  "bytes": 216776704,
+  "sha256": "4b7816bea54a6632cfdfefbbc89534bdc081fa28997aa818d8b7955606c15406",
+  "environment_lock_sha256": "3ee6dba29b6d20011f9823006a21dbaa542ad0052a158f32e75ceaa0df77664c",
+  "images": {
+    "app": {
+      "reference": "logquant-fixture-app@sha256:d96458c959c83937938b6130367f22c9f7eb725f26f5a432b48d92fc79bcee97",
+      "id": "sha256:d96458c959c83937938b6130367f22c9f7eb725f26f5a432b48d92fc79bcee97",
+      "platform": "linux/arm64"
+    },
+    "harness": {
+      "reference": "logquant-fixture-harness@sha256:45f9a1e0976d56386bbd3d2f620538d15c12f94454a11635c04c824429d8bb02",
+      "id": "sha256:45f9a1e0976d56386bbd3d2f620538d15c12f94454a11635c04c824429d8bb02",
+      "platform": "linux/arm64"
+    },
+    "db": {
+      "reference": "postgres@sha256:3267c505060a0052e5aa6e5175a7b41ab6b04da2f8c4540fc6e98a37210aa2d3",
+      "id": "sha256:3267c505060a0052e5aa6e5175a7b41ab6b04da2f8c4540fc6e98a37210aa2d3",
+      "platform": "linux/arm64"
+    }
+  },
+  "restore": "docker image load --input logquant-fixture/environment-history/2026-11-11-whole-run-final/images.tar",
+  "restore_tested": false
+}

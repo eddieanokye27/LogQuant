@@ -1,0 +1,11 @@
+{
+  "runs": [
+    {"split":"train", "config":{"seed":101,"rate":4}},
+    {"split":"development", "config":{"seed":102,"rate":5,"category":"Database unavailable"}},
+    {"split":"development", "config":{"seed":103,"rate":6,"category":"Invalid database credentials"}},
+    {"split":"development", "config":{"seed":104,"rate":4,"category":"Application exception"}},
+    {"split":"development", "config":{"seed":105,"rate":5,"category":"Database permission denied"}},
+    {"split":"development", "config":{"seed":106,"rate":6,"category":"Database lock contention"}},
+    {"split":"test", "config":{"seed":107,"rate":5}}
+  ]
+}

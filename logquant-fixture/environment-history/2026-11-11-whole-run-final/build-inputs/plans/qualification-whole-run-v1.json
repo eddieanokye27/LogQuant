@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "policy": "acceptance-v4-whole-run",
+  "approval": "Project owner approved Mac-only implementation and this one new nonresearch suite; no supervisor approval claimed",
+  "parent_plan_sha256": "b66bc3524eddcbf1bd223d61a7974956b61f624e9d8ea1255e8636ef30002c17",
+  "predecessor_collection": "25b7b646158148608e0fdb4a2445f8e8",
+  "predecessor_allowance_consumed": true,
+  "suites": 1,
+  "attempts_per_case": 1,
+  "repeat_or_replace": false,
+  "research_authorized": false
+}

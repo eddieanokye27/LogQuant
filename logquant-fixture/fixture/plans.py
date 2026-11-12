@@ -2,6 +2,7 @@
 from collections import Counter
 import hashlib
 import json
+from pathlib import Path
 
 from fixture.core import CATEGORIES, Config
 
@@ -35,6 +36,32 @@ def validate_plan(payload: dict) -> list[tuple[dict, Config]]:
 
 def plan_hash(payload: dict) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+
+
+def select_stage(payload: dict, stage: str | None):
+    rows = validate_plan(payload)
+    if stage is None:
+        return rows
+    if stage != 'train-development' or payload['purpose'] != 'research':
+        raise ValueError('Only the explicit research train-development stage is supported')
+    authoritative = json.loads((Path(__file__).resolve().parents[1]/'plans/research.json').read_text())
+    if plan_hash(payload) != plan_hash(authoritative):
+        raise ValueError('Stage parent differs from the authoritative research plan')
+    return [(item, cfg) for item, cfg in rows if item['split'] in ('train', 'development')]
+
+
+def stage_progress(manifest, payload):
+    """Evaluation-only ledger; stage completion never means all 42 are complete."""
+    if 'stage' not in manifest:
+        return
+    selected = manifest['stage']['selected_slot_ids']
+    accepted = {a['slot_id']: a['run_id'] for a in manifest['attempts'] if a['status'] == 'valid'}
+    manifest['accepted_run_ids'] = accepted
+    manifest['pending_slot_ids'] = [r['slot_id'] for r in payload['runs'] if r['slot_id'] not in accepted]
+    manifest['stage']['pending_slot_ids'] = [s for s in selected if s not in accepted]
+    manifest['stage']['status'] = ('complete' if manifest['status'] == 'stage_complete'
+                                 else 'stopped' if manifest['status'] == 'stopped' else 'running')
+    manifest['parent_plan_complete'] = False
 
 
 def plan_summary(payload: dict) -> dict:

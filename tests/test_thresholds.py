@@ -292,3 +292,17 @@ def test_incompatible_frozen_artifacts_rejected(kind):
     elif kind == "convention": artifact = artifact.model_copy(update={"score_definition": "wrong"})
     else: artifact = artifact.model_copy(update={"threshold": 0.7})
     with pytest.raises(ValueError): apply_threshold(result, identity, artifact)
+
+
+@pytest.mark.parametrize('interval_value', [[None,None], [None,'2026-01-01T00:01:00Z'], ['2026-01-01T00:01:00Z',None]])
+def test_actual_fixture_healthy_null_interval_contract(development,interval_value):
+    selection,bundle,identity=development
+    entry=next(e for e in read(selection)['runs'] if 'healthy' in e['run_id'])
+    path=selection.parent/entry['directory']/'evaluation/ground_truth.json'
+    ground=read(path);ground['observed_failure_interval']=interval_value;write(path,ground)
+    if interval_value==[None,None]:
+        artifact=calibrate_manifest(selection,bundle,identity,CONFIG)
+        assert artifact.status in ('selected','unsuccessful') and len(artifact.inputs)==2
+    else:
+        with pytest.raises(ValueError,match='Healthy verification'):
+            calibrate_manifest(selection,bundle,identity,CONFIG)

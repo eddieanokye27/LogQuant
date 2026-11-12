@@ -1,5 +1,11 @@
 # Development calibration and frozen alerts — policy v1
 
+This page retains the original `verified-interval-v1` policy and CLI default.
+The separately versioned, owner-approved [Mac whole-run policy v2](whole-run-protocol.md)
+is implemented with synthetic-only verification. Select it explicitly with
+`--policy whole-run-v2`; schema-1 and schema-2 threshold artifacts are incompatible.
+Neither policy has been calibrated on research data.
+
 Policy defined before implementing selection on November 10, 2026. This adds
 minimal classification/grouping, not evidence bundles or final evaluation tooling.
 It preserves the proposal's first-alert-during-failure rule. All demonstrations
@@ -109,6 +115,12 @@ healthy run cannot also declare a failure interval. Fault intervals outside
 scorable coverage are retained as misses rather than removed. Collection status
 must be complete; eligibility relies on trusted recorded verification, not
 authentication of experimental truth.
+The documented completed `train-development` research stage is also eligible,
+after the shared parent-plan/assignment/completion checks; an interrupted stage
+is not. The fixture's healthy `[null, null]` failure interval is recognized as
+explicitly absent, as is `null`. A partially populated interval or healthy run
+with actual failure times remains conflicting and is rejected. This metadata
+compatibility does not alter diagnostic features, score comparison or calibration.
 
 Saved `scores.jsonl` and `score-report.json` use the existing detector CLI
 contract. Missing windows/files, inconsistent reports, foreign models or altered

@@ -1,8 +1,9 @@
 """Evaluation-only eligibility checks; never used by frozen alert inference."""
+from __future__ import annotations
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Literal
+from typing import Literal,TYPE_CHECKING
 
 from pydantic import Field
 from logquant.detection.contracts import ScoringResult
@@ -10,9 +11,12 @@ from logquant.detection.core import DetectorBundle, score_run, sha256
 from logquant.features import prepare_directory
 from logquant.ingestion.models import Contract
 from logquant.training.orchestration import CollectionMetadata, VerificationMetadata, metadata
+from logquant.training.collections import require_completed_collection
 from .contracts import CalibrationArtifact, CalibrationConfig, CalibrationInput, DetectorIdentity, FailureInterval
 from .selection import DevelopmentCase, _select
 from .storage import read_bytes
+if TYPE_CHECKING:
+    from .whole_run import WholeRunConfig,WholeRunArtifact
 
 CATEGORIES = {"Database unavailable", "Invalid database credentials", "Application exception",
               "Database permission denied", "Database lock contention"}
@@ -32,7 +36,9 @@ class DevelopmentSelection(Contract):
 
 
 def calibrate_manifest(path: Path, bundle: DetectorBundle, detector: DetectorIdentity,
-                       config: CalibrationConfig) -> CalibrationArtifact:
+                       config: CalibrationConfig | WholeRunConfig) -> CalibrationArtifact | WholeRunArtifact:
+    from .whole_run import WholeRunConfig,WholeRunCase,select as select_whole
+    whole = isinstance(config,WholeRunConfig)
     if detector.model_id != bundle.metadata.model_id or detector.usage != bundle.metadata.usage:
         raise ValueError("Detector identity mismatch")
     raw, selection_hash = metadata(path)
@@ -55,9 +61,8 @@ def calibrate_manifest(path: Path, bundle: DetectorBundle, detector: DetectorIde
         if directory.name != entry.run_id:
             raise ValueError("Run directory basename differs from declared run ID")
         assignment_raw, assignment_hash = metadata(directory.parent/"manifest.json")
+        require_completed_collection(assignment_raw, directory.parent, selection.purpose, metadata)
         collection = CollectionMetadata.model_validate(assignment_raw)
-        if collection.purpose != selection.purpose or collection.status != "complete":
-            raise ValueError("Only completed development collections of matching purpose are eligible; readiness validation is forbidden")
         accepted = [a for a in collection.attempts if a.status == "valid"]
         if (any(not a.run_id or not a.slot_id for a in accepted)
                 or len({a.run_id for a in accepted}) != len(accepted)
@@ -71,6 +76,11 @@ def calibrate_manifest(path: Path, bundle: DetectorBundle, detector: DetectorIde
             raise ValueError("Selected run is not a valid development assignment")
         ground_raw, ground_hash = metadata(directory/"evaluation/ground_truth.json")
         ground = VerificationMetadata.model_validate(ground_raw)
+        if whole and not ground.simulation and (ground_raw.get('collection_valid') is not True
+                or ground_raw.get('collection_policy')!='acceptance-v4-whole-run'):
+            raise ValueError('Whole-run policy requires amended complete research verification')
+        if not whole and ground_raw.get('collection_policy')=='acceptance-v4-whole-run':
+            raise ValueError('Amended whole-run verification cannot select a legacy timing threshold')
         if ground.run_id != entry.run_id or not ground.valid or ground.invalidity_reasons:
             raise ValueError("Invalid or mismatched run verification")
         if ground.simulation != (selection.purpose == "synthetic-test"):
@@ -85,14 +95,23 @@ def calibrate_manifest(path: Path, bundle: DetectorBundle, detector: DetectorIde
         failure = None
         interval = ground_raw.get("observed_failure_interval")
         if category is None:
-            if ground.designation != "healthy" or interval is not None:
+            # Fixture schema v2 explicitly writes [null, null] for healthy runs.
+            # This is an absent interval, not permission to ignore partial/conflicting times.
+            if ground.designation != "healthy" or interval not in (None, [None, None]):
                 raise ValueError("Healthy verification has conflicting designation/failure interval")
         else:
-            if category not in CATEGORIES or ground.designation != "faulty" or not isinstance(interval, list) or len(interval) != 2:
+            if category not in CATEGORIES or ground.designation != "faulty":
+                raise ValueError('Unsupported faulty run designation')
+            if whole:
+                if not ground.simulation and (ground_raw.get('collection_valid') is not True
+                        or ground_raw.get('collection_policy')!='acceptance-v4-whole-run'):
+                    raise ValueError('Whole-run calibration requires amended verified collection')
+            elif not isinstance(interval, list) or len(interval) != 2:
                 raise ValueError("Fault verification requires a supported category and sampled failure interval")
-            failure = FailureInterval.model_validate_json(json.dumps(dict(start=interval[0], end=interval[1])))
-            if failure.end > recovered:
-                raise ValueError("Observed failure interval ends after verified recovery")
+            if not whole:
+                failure = FailureInterval.model_validate_json(json.dumps(dict(start=interval[0], end=interval[1])))
+                if failure.end > recovered:
+                    raise ValueError("Observed failure interval ends after verified recovery")
         run = prepare_directory(directory/"diagnostic", run_id=entry.run_id)
         hashes = {s.source: s.sha256 for s in run.ingestion_report.sources}
         fingerprint = tuple(sorted(hashes.items()))
@@ -122,5 +141,6 @@ def calibrate_manifest(path: Path, bundle: DetectorBundle, detector: DetectorIde
             score_directory=str(score_directory.resolve()), hashes={**hashes,
             "verification": ground_hash, "assignments": assignment_hash, "score_report": report_hash,
             "scores": sha256(data)}))
-        cases.append(DevelopmentCase(scores=saved, failure=failure))
-    return _select(cases, detector, config, inputs, selection_hash)
+        cases.append(WholeRunCase(saved,category is not None,ground_raw.get('timing_status','unassessable'))
+                     if whole else DevelopmentCase(scores=saved,failure=failure))
+    return select_whole(cases,detector,config,inputs,selection_hash) if whole else _select(cases, detector, config, inputs, selection_hash)

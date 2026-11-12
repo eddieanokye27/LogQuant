@@ -4,5 +4,6 @@ COPY requirements.txt requirements.lock .
 RUN pip install --no-cache-dir --no-deps -r requirements.lock && pip check
 COPY fixture fixture
 COPY tests tests
+COPY scripts scripts
 COPY batch.example.json Dockerfile compose.yaml .
 ENV PYTHONUNBUFFERED=1

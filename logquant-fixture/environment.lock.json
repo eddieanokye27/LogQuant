@@ -2,13 +2,13 @@
   "schema_version": 1,
   "images": {
     "app": {
-      "reference": "logquant-fixture-app@sha256:3650cea4c3ddb2eca1a8d26f8cba09ac60340e348ec221bfc8f6599c646bc338",
-      "id": "sha256:3650cea4c3ddb2eca1a8d26f8cba09ac60340e348ec221bfc8f6599c646bc338",
+      "reference": "logquant-fixture-app@sha256:d96458c959c83937938b6130367f22c9f7eb725f26f5a432b48d92fc79bcee97",
+      "id": "sha256:d96458c959c83937938b6130367f22c9f7eb725f26f5a432b48d92fc79bcee97",
       "platform": "linux/arm64"
     },
     "harness": {
-      "reference": "logquant-fixture-harness@sha256:8c80aea13abb2a1050881ab984f421a65d9e6c3fa5e0fa6b429559a385fed2ce",
-      "id": "sha256:8c80aea13abb2a1050881ab984f421a65d9e6c3fa5e0fa6b429559a385fed2ce",
+      "reference": "logquant-fixture-harness@sha256:45f9a1e0976d56386bbd3d2f620538d15c12f94454a11635c04c824429d8bb02",
+      "id": "sha256:45f9a1e0976d56386bbd3d2f620538d15c12f94454a11635c04c824429d8bb02",
       "platform": "linux/arm64"
     },
     "db": {

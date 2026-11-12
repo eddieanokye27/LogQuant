@@ -1,5 +1,13 @@
 # Dataset preparation protocol v1 — November 7, 2026
 
+**Prospective amendment, November 11:** The owner-approved
+[Mac whole-run protocol](whole-run-protocol.md) separately defines v4 collection
+acceptance and schema-2 calibration/evaluation. The original protocol below is
+retained; its strict clock and timing-sensitive evaluation claims are not silently
+reinterpreted. Original 42-slot assignments and exhausted histories remain.
+Research collection still requires qualification and a separately authorized
+campaign/realization amendment.
+
 **Readiness update:** Future collection uses the fixed probe/timing/environment
 policy in [readiness policy v2](validation/readiness-policy-v2.md). Research slot
 counts, categories, splits, seeds, and workload profiles below are unchanged.
@@ -79,6 +87,52 @@ Commands from `logquant-fixture/`:
 Only the validation batch is authorized for this milestone. Research collection
 is a later task. Neither plan nor collection manifest may be passed to LogQuant;
 only explicit diagnostic JSONL files may be used as future model inputs.
+
+## Staged research collection — November 11, 2026
+
+The real-data detector task separately authorizes only the existing six healthy
+training and thirteen development slots. The parent remains the complete
+`plans/research.json`; do not create a nineteen-row replacement plan or change
+its rows. `batch plans/research.json --stage train-development` validates that
+parent against the authoritative file and selects only train/development rows
+in original order. Test slots s020–s042 remain pending, not executed or inspected.
+
+The collection retains the full `plan.json`, `parent_plan_sha256`, explicit
+`stage.name`/`selected_slot_ids`, all attempts, accepted slot-to-run map and
+pending parent/stage slots. Its final state is **stage_complete**, with
+`stage.status=complete`, no pending selected slots, and
+`parent_plan_complete=false`. This is not completion of all 42 slots. An invalid
+or interrupted attempt leaves **stopped**, with retained reasons and pending
+slots. Existing full validation batches retain their original `complete` contract.
+
+Training/calibration recognize a selected stage only after verifying its parent
+snapshot/hash against the unchanged authoritative plan, exact configs/splits,
+sequential bounded attempts, unique accepted IDs, all nineteen selected accepted
+slots and the twenty-three pending test slots. They continue rejecting stopped,
+incomplete, conflicting, readiness-validation or wrong-split inputs. A stage is
+evaluation metadata; it never enters diagnostic ingestion or vectorizer text.
+
+There is no automatic resume/retry. The regeneration rules below still govern
+manual replacements: retain the original invalid attempt, report/remedy its
+collection failure, record pending replacement intent and outcome in the
+evaluation-only ledger, reuse the exact planned config and accept the first
+valid attempt within three total. Do not recreate valid slots or replace runs
+based on detector/LLM results. A selected stage cannot be made eligible merely by
+editing its status; the complete assignment/provenance checks must pass.
+
+After explicitly authorized collection, run from `logquant-fixture/` using the
+analysis environment:
+
+```sh
+../.venv/bin/python scripts/verify_validation.py \
+  research-runs/<collection-UUID> --research-stage
+```
+
+This reuses the full-duration timing, independent fault/recovery, native evidence,
+count/export-boundary and bounded leakage checks, with explicit selected-stage
+eligibility. It writes a separate `stage_report.json`; validation-only mode and
+its old reports remain intact. Collection changes revise image/source identities
+and require six-case full-duration qualification before research collection.
 
 ## Acceptance and regeneration rules
 

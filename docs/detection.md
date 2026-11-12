@@ -33,6 +33,11 @@ Selection JSON has exactly these fields (paths relative to the selection file):
 ```
 
 `purpose` can later be `research`; validation collections are always ineligible.
+Research may use a legitimately completed `train-development` stage of the full
+authoritative plan. Shared evaluation-only eligibility verifies its parent plan,
+selection, exact assignments, accepted IDs and pending test slots; `stage_complete`
+is distinct from full collection completion. Stopped/incomplete stages remain
+ineligible. See the [staging contract](dataset-protocol.md#staged-research-collection--november-11-2026).
 The example generator supplies three synthetic runs and explicitly mock
 verification metadata. Its artifacts are marked `synthetic-test-only`.
 

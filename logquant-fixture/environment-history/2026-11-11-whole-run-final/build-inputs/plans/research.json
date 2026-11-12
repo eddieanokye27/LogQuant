@@ -1,0 +1,680 @@
+{
+  "schema_version": 1,
+  "purpose": "research",
+  "protocol": "dataset-protocol-v2-readiness",
+  "max_attempts_per_slot": 3,
+  "runs": [
+    {
+      "slot_id": "s001",
+      "split": "train",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10001,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s002",
+      "split": "train",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10002,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s003",
+      "split": "train",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10003,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s004",
+      "split": "train",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10004,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s005",
+      "split": "train",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10005,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s006",
+      "split": "train",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10006,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s007",
+      "split": "development",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10007,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database unavailable"
+      }
+    },
+    {
+      "slot_id": "s008",
+      "split": "development",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10008,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database lock contention"
+      }
+    },
+    {
+      "slot_id": "s009",
+      "split": "development",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10009,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Application exception"
+      }
+    },
+    {
+      "slot_id": "s010",
+      "split": "development",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10010,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s011",
+      "split": "development",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10011,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database lock contention"
+      }
+    },
+    {
+      "slot_id": "s012",
+      "split": "development",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10012,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database unavailable"
+      }
+    },
+    {
+      "slot_id": "s013",
+      "split": "development",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10013,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Invalid database credentials"
+      }
+    },
+    {
+      "slot_id": "s014",
+      "split": "development",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10014,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s015",
+      "split": "development",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10015,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s016",
+      "split": "development",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10016,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Application exception"
+      }
+    },
+    {
+      "slot_id": "s017",
+      "split": "development",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10017,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Invalid database credentials"
+      }
+    },
+    {
+      "slot_id": "s018",
+      "split": "development",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10018,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database permission denied"
+      }
+    },
+    {
+      "slot_id": "s019",
+      "split": "development",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10019,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database permission denied"
+      }
+    },
+    {
+      "slot_id": "s020",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10020,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database lock contention"
+      }
+    },
+    {
+      "slot_id": "s021",
+      "split": "test",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10021,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s022",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10022,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database lock contention"
+      }
+    },
+    {
+      "slot_id": "s023",
+      "split": "test",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10023,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database lock contention"
+      }
+    },
+    {
+      "slot_id": "s024",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10024,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database permission denied"
+      }
+    },
+    {
+      "slot_id": "s025",
+      "split": "test",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10025,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database unavailable"
+      }
+    },
+    {
+      "slot_id": "s026",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10026,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Invalid database credentials"
+      }
+    },
+    {
+      "slot_id": "s027",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10027,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database unavailable"
+      }
+    },
+    {
+      "slot_id": "s028",
+      "split": "test",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10028,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database unavailable"
+      }
+    },
+    {
+      "slot_id": "s029",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10029,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database permission denied"
+      }
+    },
+    {
+      "slot_id": "s030",
+      "split": "test",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10030,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database lock contention"
+      }
+    },
+    {
+      "slot_id": "s031",
+      "split": "test",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10031,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Application exception"
+      }
+    },
+    {
+      "slot_id": "s032",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10032,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database unavailable"
+      }
+    },
+    {
+      "slot_id": "s033",
+      "split": "test",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10033,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database permission denied"
+      }
+    },
+    {
+      "slot_id": "s034",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10034,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s035",
+      "split": "test",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10035,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Application exception"
+      }
+    },
+    {
+      "slot_id": "s036",
+      "split": "test",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10036,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "s037",
+      "split": "test",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10037,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database permission denied"
+      }
+    },
+    {
+      "slot_id": "s038",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10038,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Application exception"
+      }
+    },
+    {
+      "slot_id": "s039",
+      "split": "test",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 10039,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Invalid database credentials"
+      }
+    },
+    {
+      "slot_id": "s040",
+      "split": "test",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 10040,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Invalid database credentials"
+      }
+    },
+    {
+      "slot_id": "s041",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10041,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Application exception"
+      }
+    },
+    {
+      "slot_id": "s042",
+      "split": "test",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 10042,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Invalid database credentials"
+      }
+    }
+  ]
+}

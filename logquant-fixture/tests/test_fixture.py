@@ -77,7 +77,7 @@ def test_http_failure_alone_does_not_verify_lock():
     asyncio.run(check())
 
 @pytest.mark.parametrize('interrupted',[False,True])
-def test_cleanup_and_invalid_metadata_after_failure(tmp_path, interrupted):
+def test_cleanup_and_invalid_metadata_after_failure(tmp_path, interrupted, fake_physical_collectors):
     class Control:
         resets=0
         def reset(self): self.resets+=1
@@ -146,8 +146,8 @@ def test_config_split_validation_precedes_mutations(tmp_path):
     assert not (tmp_path/'manifest.json').exists()
 
 @pytest.mark.parametrize('category',[None,CATEGORIES[3]])
-@pytest.mark.parametrize('failure', [None, 'workload', 'evidence', 'timing'])
-def test_complete_lifecycle(category,tmp_path,failure):
+@pytest.mark.parametrize('failure', [None, 'workload', 'evidence', 'timing','uncertain_clock'])
+def test_complete_lifecycle(category,tmp_path,failure,fake_physical_collectors):
     from fixture.core import now
     class Control:
         resets=0
@@ -161,10 +161,25 @@ def test_complete_lifecycle(category,tmp_path,failure):
     async def healthy(client): return {'at':now(),'healthy':True,'requests':[]}
     async def phase(client,control,cfg,duration,sequence,results,name,data,timing):
         if failure=='timing':
-            timing.violation('clock_divergence',86)
+            timing.violation('heartbeat_gap',86)
+            timing.check()
+        if failure=='uncertain_clock':
+            timing.violation('clock_divergence',2)
             timing.check()
         status=500 if failure=='workload' and name=='exposure' else 200
-        results.append({'status':status,'phase':name,'latency_ms':1})
+        # A synthetic complete one-slot phase; lifecycle tests mock only transport/clock.
+        from fixture.scheduling import utc
+        start=timing.workload.monotonic_origin+len(results)*2.0
+        wall=1760000000+start
+        timing.workload.start_phase(name,1,start,wall)
+        operation=next(sequence)
+        timing.workload.record(name,0,operation,start,utc(wall),start,utc(wall),'emitted')
+        results.append({'status':status,'phase':name,'latency_ms':1,'sequence':0,
+                        'method':operation[0],'path':operation[1],
+                        'scheduled_at':utc(wall),'planned_monotonic':start,
+                        'enqueued_at':utc(wall),'enqueued_monotonic':start,
+                        'dispatch_monotonic':start,'request_started_monotonic':start,
+                        'request_finished_monotonic':start+.001,'scheduler_delay_ms':0,'queue_wait_ms':0})
         if status!=200 and category is None: raise RuntimeError('Healthy workload failed')
         if name=='exposure' and category:
             data['first_observed_failure']=data['last_observed_failure']=now()
@@ -187,6 +202,18 @@ def test_complete_lifecycle(category,tmp_path,failure):
     assert control.resets==2
     assert (directory/'evaluation/ground_truth.json').exists()
     if failure=='timing': assert data['timing']['violations']
+    if failure=='uncertain_clock':assert data['collection_valid'] and data['timing_status']=='unassessable' and data['timing']['clock_warnings']
+
+
+@pytest.fixture
+def fake_physical_collectors():
+    """Lifecycle-only mocks; real collector integrity is tested separately."""
+    with patch('fixture.runner.snapshot',return_value={}), \
+         patch('fixture.runner.export_ranges',return_value={'test_only':True}), \
+         patch('fixture.runner.verify_ranges',return_value={'application':3,'postgresql':0}), \
+         patch('fixture.runner.verify_representation',return_value={'test_only':True}), \
+         patch('fixture.runner.verify_request_links',return_value={'test_only':True}):
+        yield
 
 def test_low_request_rate_does_not_extend_phase():
     async def check():

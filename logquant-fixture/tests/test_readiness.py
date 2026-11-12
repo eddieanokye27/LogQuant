@@ -74,7 +74,7 @@ def test_blocking_harness_pause_rejects_scheduled_traffic():
         return httpx.Response(200)
     async def check():
         async with httpx.AsyncClient(transport=httpx.MockTransport(respond),base_url='http://app') as client:
-            with pytest.raises(RuntimeError,match='scheduler_delay'):
+            with pytest.raises(RuntimeError,match='workload_distortion'):
                 await traffic(client,Config(rate=4),1,workload(1),[],'baseline',TimingGuard())
     asyncio.run(check())
 
@@ -97,4 +97,66 @@ def test_phase_probe_deadlines_and_count_are_category_independent(category):
                 await run_phase(client,Control(),Config(category=category,poll=.001),.05,workload(1),[],'exposure',data,TimingGuard())
         assert [r['scheduled_offset_seconds'] for r in data['observations']]==[0,.02,.04]
         assert len(seen)==12
+    asyncio.run(check())
+
+
+def test_rejected_arrival_retains_identity_and_is_not_an_executed_request():
+    first=True
+    async def respond(req):
+        nonlocal first
+        if first:
+            first=False
+            time.sleep(.9)
+        return httpx.Response(200)
+    async def check():
+        guard=TimingGuard();rows=[]
+        async with httpx.AsyncClient(transport=httpx.MockTransport(respond),base_url='http://app') as client:
+            with pytest.raises(RuntimeError,match='workload_distortion'):
+                await traffic(client,Config(rate=4),1,workload(1),rows,'baseline',guard)
+        event=next(v for v in guard.workload.arrivals if v['outcome']=='scheduler_skip')
+        assert event['phase']=='baseline' and event['sequence']==1
+        assert event['skip_reason']=='late_wake'
+        assert event['observed_monotonic']-event['planned_monotonic']==pytest.approx(event['scheduler_delay_ms']/1000)
+        assert not any(row['sequence']==event['sequence'] for row in rows)
+    asyncio.run(check())
+
+
+def test_phase_utc_anchor_and_complete_queue_dispatch_measurements():
+    async def check():
+        rows=[];wall=time.time()-.05;mono=time.monotonic()-.05
+        async with httpx.AsyncClient(transport=httpx.MockTransport(lambda r:httpx.Response(200)),base_url='http://app') as client:
+            await traffic(client,Config(rate=4),.01,workload(1),rows,'baseline',TimingGuard(),mono,wall)
+        row=rows[0]
+        from datetime import datetime
+        assert datetime.fromisoformat(row['scheduled_at']).timestamp()==pytest.approx(wall,rel=0,abs=.000001)
+        assert row['planned_monotonic']<=row['enqueued_monotonic']<=row['dispatch_monotonic']<=row['request_started_monotonic']<=row['request_finished_monotonic']
+        assert row['scheduler_delay_ms']>=45
+        assert row['dispatch_delay_ms']==pytest.approx(row['scheduler_delay_ms']+row['queue_wait_ms'],abs=1)
+    asyncio.run(check())
+
+
+def test_heartbeat_cpu_context_does_not_identify_off_cpu_cause():
+    with patch('fixture.timing.time.time',return_value=100),patch('fixture.timing.time.monotonic',return_value=50),patch('fixture.timing.time.process_time',side_effect=[1,1.002]):
+        guard=TimingGuard();guard.tick(wall=100.8,mono=50.8)
+    sample=guard.summary['max_heartbeat_sample']
+    assert sample['gap_seconds']==pytest.approx(.8)
+    assert sample['process_cpu_seconds']==pytest.approx(.002)
+    assert guard.summary['notable_heartbeats']==[sample]
+    assert not guard.summary['violations']  # Unchanged 1-second heartbeat acceptance.
+
+
+def test_synchronous_admin_state_is_offloaded_from_event_loop():
+    class Control:
+        def state(self,category):
+            time.sleep(.6)
+            return {'independent':True}
+    async def check():
+        guard=TimingGuard();monitor=asyncio.create_task(guard.monitor())
+        try:
+            async with httpx.AsyncClient(transport=httpx.MockTransport(lambda r:httpx.Response(500)),base_url='http://app') as client:
+                await failure_probe(client,Control(),Config(category=CATEGORIES[0],poll=.01))
+            assert guard.summary['heartbeat_samples']>=3
+            assert guard.summary['max_heartbeat_gap_seconds']<.5
+        finally:
+            monitor.cancel();await asyncio.gather(monitor,return_exceptions=True)
     asyncio.run(check())

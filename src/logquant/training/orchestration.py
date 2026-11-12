@@ -5,13 +5,14 @@ import os
 from pathlib import Path
 from typing import Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from logquant.features import prepare_directory
 from logquant.ingestion.boundary import directory_fd, open_source
 from logquant.ingestion.models import Contract
 from logquant.detection.contracts import DetectorConfig, TrainingProvenance
 from logquant.detection.core import DetectorBundle, _fit_prepared, sha256
+from .collections import require_completed_collection
 
 
 class SelectionEntry(Contract):
@@ -55,6 +56,16 @@ class VerificationMetadata(BaseModel):
     simulation: bool
     recovery_verified_at: str
     log_counts: dict[str, int]
+
+    @model_validator(mode='after')
+    def whole_run_validity(self):
+        extra=self.model_extra or {}
+        if extra.get('collection_policy')=='acceptance-v4-whole-run':
+            if extra.get('collection_valid') is not self.valid or extra.get('timing_status')!='unassessable':
+                raise ValueError('Conflicting amended collection validity/timing status')
+            if self.valid and (not extra.get('collector_ranges') or not extra.get('representation') or not extra.get('request_links')):
+                raise ValueError('Amended verification lacks complete physical-export proof')
+        return self
 
 
 def read_bytes(path: Path) -> bytes:
@@ -102,9 +113,8 @@ def fit_manifest(path: str | Path, *, config: DetectorConfig | None = None) -> D
         if directory.name != entry.run_id:
             raise ValueError("Run directory basename must match its declared identity")
         assignments,assignment_hash = metadata(directory.parent/"manifest.json")
+        require_completed_collection(assignments, directory.parent, selection.purpose, metadata)
         assignments=CollectionMetadata.model_validate(assignments).model_dump()
-        if assignments.get("purpose") != selection.purpose or assignments.get("status") != "complete":
-            raise ValueError("Training requires a completed collection of the declared purpose; validation collections are ineligible")
         valid = [a for a in assignments.get("attempts",[]) if a.get("status")=="valid"]
         if any(not a["run_id"] for a in valid):raise ValueError("Accepted collection assignment has no run identity")
         if len({a["run_id"] for a in valid}) != len(valid):

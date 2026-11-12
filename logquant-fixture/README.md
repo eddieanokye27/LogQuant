@@ -95,6 +95,35 @@ does not automatically retry. Manual regeneration permits at most three total
 attempts per slot and requires an evaluation-only ledger; see the protocol.
 Do not execute the research plan as part of fixture validation.
 
+For a separately authorized research train/development task, keep the full plan
+and select the stage explicitly:
+
+```sh
+./fixture.sh batch plans/research.json --stage train-development
+../.venv/bin/python scripts/verify_validation.py research-runs/<collection-UUID> --research-stage
+```
+
+Only s001–s019 execute. The retained full parent-plan hash, stage selection,
+attempts, accepted run IDs and pending slots distinguish `stage_complete` from
+completion of all 42 slots. Test slots remain pending. Stopped/interrupted stages
+are ineligible for fitting/calibration; existing regeneration rules still apply,
+with no automatic retry/resume. Changes to the baked harness source require an
+explicitly revised image lock and six-case requalification before research use.
+
+Current research collection stopped after s004 exhausted three timing-invalid
+attempts; only s001–s003 are accepted. See the
+[actual results/blocker](../docs/validation/2026-11-11-real-data-detector.md).
+`batch` starts a new collection, not a resume: do not use it to reset exhausted
+slot counters or recollect accepted slots. Further collection needs an explicit
+protocol/campaign decision after resolving scheduling continuity.
+
+The subsequent [continuity investigation](../docs/validation/2026-11-11-continuity-investigation.md)
+clarified producer lateness versus queue/HTTP latency and added evaluation-only
+[trace v3 fields](../docs/validation/continuity-trace-v3.md), without raising limits.
+The current locked trace image failed qualification on its first healthy case;
+it is **not research-qualified**. The cause remains unresolved. Do not restart
+research from the example command or treat diagnostic repetitions as replacements.
+
 After a complete validation batch, review its exports with the standard-library
 helper (from this directory):
 
@@ -258,9 +287,46 @@ Collection commands automatically use `caffeinate -i -s` on macOS and record the
 guard in evaluation metadata. Elsewhere they warn and record it as unavailable.
 Do not close the lid or force sleep. Evaluation-only request dispatch/queue
 metrics, a 100 ms dual-clock heartbeat, and phase timing enforce fixed acceptance
-limits: 0.5 s scheduler delay, 1 s queue/heartbeat/clock divergence, and at most
-6 s phase overrun. Dropped arrivals invalidate v2 runs. Slow awaited fault
-responses are measured separately from harness continuity.
+limits. Original v2 uses a 0.5 s workload/probe scheduler cutoff and rejects any
+dropped arrival. Prospectively, [policy v3](../docs/validation/readiness-policy-v3.md)
+skips expired workload slots without replay, preserves the seeded slot mapping,
+and caps skip/bucket-migration distortion at 5% nominal bucket volume and 1% per
+run. Probe scheduling remains 0.5 s, queue/heartbeat/clock remain 1 s and phase
+overrun remains 6 s; queue-full drops remain invalid. Slow awaited fault responses
+are measured separately. Exact accounting is retained in evaluation ground truth
+and replayed by the export audit; original v2 results retain their old rules.
+The revised environment is frozen/archived but is not research-qualified. Its
+single nonresearch suite passed healthy/database-stop cases, then stopped on
+clock divergence in the credential case; three cases were unattempted. See the
+[execution report](../docs/validation/2026-11-11-v3-qualification-execution.md).
+That allowance is consumed; no replacement or repeat is authorized. Research
+collection remains separately blocked.
+
+The owner subsequently approved the separate [Mac whole-run amendment](../docs/whole-run-protocol.md)
+and **one new** qualification suite. Implemented `acceptance-v4-whole-run` exports
+complete physical collector ranges, checks identities/prefixes/reconciliation and
+cross-case nonoverlap, uses monotonic phase/load coverage, and retains bracketed
+clock readings. Collection validity is separate from unassessable physical-time
+alignment; a clock-only one-second crossing becomes a timing warning. Other
+guards remain. The legacy v2/v3 audit paths and every old result remain unchanged.
+
+The new frozen environment and tests are documented in the
+[implementation report](../docs/validation/2026-11-11-whole-run-qualification.md).
+The resumed AC/open-lid/awake preflight passed in the exact launcher context.
+All six cases and independent audits passed; services are reset/stopped. See the
+[execution report](../docs/validation/2026-11-11-whole-run-qualification-execution.md).
+The new allowance is now **consumed**. Its historical command was:
+
+```sh
+./fixture.sh batch plans/validation-readiness.json \
+  --qualification-record plans/qualification-whole-run-v1.json
+```
+
+Do not rerun this consumed suite. The exclusive qualification claim prevents
+repeats; local attempts remain 1 and
+explicit cumulative counts retain all same-parent predecessors. Stop at the first
+invalid/incomplete case during authorized collection.
+This command authorizes no research collection or fitting/calibration.
 
 ## Local checks without Docker
 

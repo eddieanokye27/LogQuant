@@ -8,7 +8,9 @@ Forest, development-only frozen thresholds/candidate grouping and deterministic
 bounded offline evidence bundles. Typed Triage/RCA contracts, deterministic
 prompts and response validation have offline CLIs. A minimal local LangGraph
 workflow and OpenAI adapter are verified with mocked HTTP and one complete
-synthetic live smoke. Research collection and the dashboard remain future work.
+synthetic live smoke. Staged research collection is implemented but stopped after
+three accepted healthy runs: s004 exhausted its timing-invalid attempt limit.
+No research detector/threshold exists; the dashboard remains future work.
 See [current status](docs/status.md) and the [architecture](docs/architecture.md).
 
 For ingestion, use Python 3.11+ in its own environment (this Mac has Python 3.13
@@ -54,7 +56,9 @@ other platforms need a separate reviewed lock. See the [detector contract and
 fit/score commands](docs/detection.md) for a synthetic-only demonstration,
 whole-run eligibility checks, null scores for missing information, and trusted
 model loading. Higher anomaly scores are more unusual, not probabilities;
-no research threshold or research model has been fitted. The separate
+no research threshold or research model has been fitted. The
+[real-data milestone report](docs/validation/2026-11-11-real-data-detector.md)
+records partial collection and the protocol-required stop. The separate
 [threshold policy and CLI](docs/thresholds.md) demonstrate selection, retained
 infeasible outcomes and frozen classification using synthetic fixtures only.
 
@@ -76,3 +80,18 @@ two-call synthetic live smoke command. Three retained attempts ended in HTTP
 post-failure v2 budget. See the [live report](docs/validation/2026-11-10-live-smoke-three.md)
 for usage and semantic review. This is not research performance or a frozen
 research configuration.
+
+The [continuity investigation](docs/validation/2026-11-11-continuity-investigation.md)
+retains the blocked research campaign, bounded nonresearch diagnostics and a
+proposed recovery decision. Timing metadata was improved, but the mechanism
+remains unresolved and the current fixture revision failed qualification;
+no additional research execution is authorized by that proposal.
+
+The preceding [v3 qualification](docs/validation/2026-11-11-v3-qualification-execution.md)
+remains stopped/exhausted after two valid cases and one clock-invalid case.
+The approved [Mac whole-run amendment](docs/whole-run-protocol.md) is implemented,
+synthetically tested and frozen/archived separately. Its single six-case
+nonresearch qualification and independent audits passed in the final environment;
+the allowance is consumed. See the [execution report](docs/validation/2026-11-11-whole-run-qualification-execution.md)
+and [proposed replacement campaign](docs/validation/2026-11-11-replacement-campaign-proposal.md).
+No replacement research campaign or additional research attempts are authorized.

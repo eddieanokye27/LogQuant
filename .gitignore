@@ -24,3 +24,6 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 /results/
+
+# Local frozen Docker image archives; keep locks and build inputs reviewable.
+/logquant-fixture/environment-history/**/images.tar

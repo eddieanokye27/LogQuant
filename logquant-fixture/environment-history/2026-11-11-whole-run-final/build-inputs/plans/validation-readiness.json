@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "purpose": "validation",
+  "protocol": "dataset-protocol-v2-readiness",
+  "max_attempts_per_slot": 3,
+  "runs": [
+    {
+      "slot_id": "v001",
+      "split": "unassigned",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 91001,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": null
+      }
+    },
+    {
+      "slot_id": "v002",
+      "split": "unassigned",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 91002,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database unavailable"
+      }
+    },
+    {
+      "slot_id": "v003",
+      "split": "unassigned",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 91003,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Invalid database credentials"
+      }
+    },
+    {
+      "slot_id": "v004",
+      "split": "unassigned",
+      "config": {
+        "baseline": 50,
+        "exposure": 180,
+        "recovery": 70,
+        "rate": 4,
+        "concurrency": 4,
+        "seed": 91004,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Application exception"
+      }
+    },
+    {
+      "slot_id": "v005",
+      "split": "unassigned",
+      "config": {
+        "baseline": 60,
+        "exposure": 180,
+        "recovery": 60,
+        "rate": 5,
+        "concurrency": 4,
+        "seed": 91005,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database permission denied"
+      }
+    },
+    {
+      "slot_id": "v006",
+      "split": "unassigned",
+      "config": {
+        "baseline": 70,
+        "exposure": 180,
+        "recovery": 50,
+        "rate": 6,
+        "concurrency": 4,
+        "seed": 91006,
+        "timeout": 4,
+        "poll": 0.25,
+        "verify_timeout": 15,
+        "category": "Database lock contention"
+      }
+    }
+  ]
+}

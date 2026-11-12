@@ -1,0 +1,47 @@
+name: logquant-fixture
+services:
+  db:
+    image: postgres:17.2@sha256:3267c505060a0052e5aa6e5175a7b41ab6b04da2f8c4540fc6e98a37210aa2d3
+    entrypoint: [/bin/sh, -c, 'mkdir -p /evidence/db && chown postgres:postgres /evidence/db && exec docker-entrypoint.sh "$$@"', --]
+    environment:
+      POSTGRES_PASSWORD: ${ADMIN_PASSWORD:-local-admin-only}
+      POSTGRES_DB: shop
+      TZ: UTC
+    command: [postgres, -c, logging_collector=on, -c, log_destination=jsonlog, -c, log_directory=/evidence/db, -c, log_filename=postgresql-%Y%m%d-%H%M%S, -c, log_rotation_age=0, -c, log_rotation_size=0, -c, log_statement=none, -c, log_min_error_statement=panic, -c, log_connections=off, -c, log_disconnections=off, -c, log_lock_waits=on, -c, deadlock_timeout=100ms, -c, timezone=UTC, -c, log_timezone=UTC]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - evidence:/evidence
+    healthcheck:
+      test: [CMD-SHELL, pg_isready -U postgres -d shop]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+  app:
+    build: .
+    command: [uvicorn, fixture.app:app, --host, 0.0.0.0, --port, '8000', --no-access-log]
+    environment:
+      APP_PASSWORD: ${APP_PASSWORD:-local-app-only}
+    ports: ['127.0.0.1:${PORT:-8000}:8000']
+    volumes: [evidence:/evidence]
+    depends_on:
+      db: {condition: service_healthy}
+  harness:
+    build: .
+    profiles: [tools]
+    entrypoint: [python, -m, fixture.cli]
+    environment:
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-local-admin-only}
+      APP_PASSWORD: ${APP_PASSWORD:-local-app-only}
+      HOST_SLEEP_GUARD: ${HOST_SLEEP_GUARD:-unavailable}
+    volumes:
+      - evidence:/evidence
+      - ./runs:/work/runs
+      - ./validation-runs:/work/validation-runs
+      - ./research-runs:/work/research-runs
+      - ./plans:/work/plans:ro
+      - ./environment.lock.json:/work/environment.lock.json:ro
+      - ./batch.example.json:/work/batch.example.json:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  pgdata:
+  evidence:

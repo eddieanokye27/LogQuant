@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "images": {
+    "app": {
+      "reference": "logquant-fixture-app@sha256:9730257b76b39c5029d9a12b9edac527f677b15648fd192b834285d3ff08c099",
+      "id": "sha256:9730257b76b39c5029d9a12b9edac527f677b15648fd192b834285d3ff08c099",
+      "platform": "linux/arm64"
+    },
+    "harness": {
+      "reference": "logquant-fixture-harness@sha256:f8a17f4ea88f09fdc6d1afe826349451c7b130a7fe4111f9b863b00e42be5ad3",
+      "id": "sha256:f8a17f4ea88f09fdc6d1afe826349451c7b130a7fe4111f9b863b00e42be5ad3",
+      "platform": "linux/arm64"
+    },
+    "db": {
+      "reference": "postgres@sha256:3267c505060a0052e5aa6e5175a7b41ab6b04da2f8c4540fc6e98a37210aa2d3",
+      "id": "sha256:3267c505060a0052e5aa6e5175a7b41ab6b04da2f8c4540fc6e98a37210aa2d3",
+      "platform": "linux/arm64"
+    }
+  },
+  "dependency_lock_sha256": "de0fea785e30daf208d07d8e91672550ed522f2d06780643fb47e197c8eb8e78",
+  "python_base": "python:3.12-slim@sha256:aa943ce411423c7582288f18707ff66eddcbaeb510502d747a72aeb34f30d159",
+  "docker_version": "29.7.2",
+  "compose_version": "5.5.0"
+}

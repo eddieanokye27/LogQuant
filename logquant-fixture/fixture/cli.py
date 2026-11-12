@@ -10,7 +10,8 @@ import uuid
 from fixture.core import CATEGORIES, Config, save
 from fixture.control import Control
 from fixture.runner import experiment
-from fixture.plans import validate_plan, plan_hash, plan_summary
+from fixture.plans import select_stage, stage_progress, plan_hash, plan_summary
+from fixture.scheduling import POLICY
 
 
 def parser():
@@ -26,6 +27,8 @@ def parser():
     run.add_argument('--concurrency',type=int)
     batch = sub.add_parser('batch')
     batch.add_argument('config', type=Path)
+    batch.add_argument('--stage', choices=['train-development'])
+    batch.add_argument('--qualification-record',type=Path)
     check = sub.add_parser('check-plan')
     check.add_argument('config', type=Path)
     sub.add_parser('integration')
@@ -69,8 +72,32 @@ async def integration():
     return 0
 
 
-async def run_plan(payload):
-    rows = validate_plan(payload)  # Reject the entire plan before state changes.
+async def run_plan(payload, stage=None, qualification_record=None):
+    rows = select_stage(payload, stage)  # Reject parent/selection before state changes.
+    qualification=None;previous={item['slot_id']:0 for item,_ in rows};history=[]
+    if qualification_record is not None:
+        qualification=json.loads(qualification_record.read_text())
+        if (payload['purpose']!='validation' or stage is not None or qualification.get('version')!=1
+                or qualification.get('policy')!=POLICY or qualification.get('parent_plan_sha256')!=plan_hash(payload)
+                or qualification.get('suites')!=1 or qualification.get('attempts_per_case')!=1
+                or qualification.get('repeat_or_replace') is not False
+                or qualification.get('predecessor_collection')!='25b7b646158148608e0fdb4a2445f8e8'):
+            raise ValueError('Invalid explicit qualification authorization record')
+        for path in sorted(Path('validation-runs').glob('*/manifest.json')):
+            prior=json.loads(path.read_text())
+            if prior.get('plan_sha256')==plan_hash(payload):
+                if path.parent.name==qualification['predecessor_collection'] and (
+                        prior.get('status')!='stopped' or not prior.get('attempts')
+                        or prior['attempts'][-1]['status'] not in ('invalid','incomplete')):
+                    raise ValueError('Predecessor qualification is not stopped/exhausted')
+                history.append({'collection':path.parent.name,'manifest_sha256':__import__('hashlib').sha256(path.read_bytes()).hexdigest()})
+                for attempt in prior['attempts']:
+                    if attempt['slot_id'] in previous:previous[attempt['slot_id']]+=1
+        if not any(h['collection']==qualification['predecessor_collection'] for h in history):
+            raise ValueError('Qualification predecessor/history missing')
+        root=Path('validation-runs');root.mkdir(exist_ok=True)
+        with (root/'qualification-whole-run-v1.claim.json').open('x') as stream:
+            json.dump(qualification,stream,indent=2)
     collection = Path(payload['purpose'] + '-runs') / uuid.uuid4().hex
     collection.mkdir(parents=True)
     save(collection/'plan.json', payload)
@@ -78,30 +105,45 @@ async def run_plan(payload):
     if environment.is_file():
         save(collection/'environment.lock.json', json.loads(environment.read_text()))
     manifest = {'schema_version': 1, 'purpose': payload['purpose'],
-                'plan_sha256': plan_hash(payload), 'status': 'running', 'attempts': []}
+                'plan_sha256': plan_hash(payload), 'acceptance_policy': POLICY,
+                'status': 'running', 'attempts': []}
+    if qualification is not None:
+        manifest.update(qualification=qualification,predecessor_history=history,
+                        previous_attempt_counts=previous,cumulative_attempt_counts=dict(previous))
+    if stage is not None:
+        manifest['parent_plan_sha256'] = plan_hash(payload)
+        manifest['stage'] = {'name': stage, 'selected_slot_ids': [item['slot_id'] for item, _ in rows]}
+        stage_progress(manifest, payload)
     path = collection/'manifest.json'
     save(path, manifest)
     print(f'Collection: {collection}', flush=True)
     for item, cfg in rows:
         entry = {'slot_id': item['slot_id'], 'split': item['split'], 'attempt': 1,
                  'status': 'running', 'config': asdict(cfg)}
+        if qualification is not None:
+            entry['cumulative_attempt']=previous[item['slot_id']]+1
+            manifest['cumulative_attempt_counts'][item['slot_id']]=entry['cumulative_attempt']
         manifest['attempts'].append(entry)
         save(path, manifest)  # Leave an explicit pending entry after hard interruption.
         try:
             directory, data = await experiment(cfg, root=collection)
         except BaseException:
             entry['status'] = 'incomplete'
+            entry['invalidity_reasons'] = ['Experiment interrupted before completion']
             manifest['status'] = 'stopped'
+            stage_progress(manifest, payload)
             save(path, manifest)
             raise
         entry.update(run_id=data['run_id'], status='valid' if data['valid'] else 'invalid',
                      invalidity_reasons=data['invalidity_reasons'])
         manifest['status'] = 'running' if data['valid'] else 'stopped'
+        stage_progress(manifest, payload)
         save(path, manifest)
         print(f'{entry["status"].upper()} {directory}', flush=True)
         if not data['valid']:
             return 1  # Recovery/review is manual; never retry silently.
-    manifest['status'] = 'complete'
+    manifest['status'] = 'stage_complete' if stage is not None else 'complete'
+    stage_progress(manifest, payload)
     save(path, manifest)
     return 0
 
@@ -123,7 +165,10 @@ async def main_async(args):
     if args.command=='batch':
         payload = json.loads(args.config.read_text())
         if 'purpose' in payload:
-            return await run_plan(payload)
+            return await run_plan(payload,args.stage,args.qualification_record)
+        if args.qualification_record is not None:raise ValueError('Qualification record requires a versioned plan')
+        if args.stage is not None:
+            raise ValueError('Stage requires the authoritative versioned research plan')
         return await run_batch(payload['runs'], Path('runs')/f'manifest-{uuid.uuid4().hex}.json')
     options = {k:v for k,v in vars(args).items() if k not in ('command','smoke') and v is not None}
     if args.smoke:

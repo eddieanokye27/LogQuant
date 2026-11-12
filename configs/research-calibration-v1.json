@@ -1,0 +1,4 @@
+{
+  "max_false_candidates_per_healthy_hour": 4.0,
+  "minimum_faulty_run_recall": 0.8
+}

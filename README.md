@@ -8,9 +8,11 @@ Forest, development-only frozen thresholds/candidate grouping and deterministic
 bounded offline evidence bundles. Typed Triage/RCA contracts, deterministic
 prompts and response validation have offline CLIs. A minimal local LangGraph
 workflow and OpenAI adapter are verified with mocked HTTP and one complete
-synthetic live smoke. Staged research collection is implemented but stopped after
-three accepted healthy runs: s004 exhausted its timing-invalid attempt limit.
-No research detector/threshold exists; the dashboard remains future work.
+synthetic live smoke. The uniform-v4 training/development stage now has nineteen
+accepted runs and a research detector fitted on six new healthy training runs.
+Development calibration is infeasible under the unchanged recall/zero-healthy-
+candidate objective; no research alert threshold exists. The dashboard remains
+future work. See the [actual research report](docs/validation/2026-11-12-research-v4-01.md).
 See [current status](docs/status.md) and the [architecture](docs/architecture.md).
 
 For ingestion, use Python 3.11+ in its own environment (this Mac has Python 3.13
@@ -56,9 +58,10 @@ other platforms need a separate reviewed lock. See the [detector contract and
 fit/score commands](docs/detection.md) for a synthetic-only demonstration,
 whole-run eligibility checks, null scores for missing information, and trusted
 model loading. Higher anomaly scores are more unusual, not probabilities;
-no research threshold or research model has been fitted. The
-[real-data milestone report](docs/validation/2026-11-11-real-data-detector.md)
-records partial collection and the protocol-required stop. The separate
+one healthy-only research model is fitted, but no usable research threshold was
+selected. The [current real-data report](docs/validation/2026-11-12-research-v4-01.md)
+records all collection outcomes, manual replacement history and unsuccessful
+development calibration. The earlier partial collection remains preserved. The separate
 [threshold policy and CLI](docs/thresholds.md) demonstrate selection, retained
 infeasible outcomes and frozen classification using synthetic fixtures only.
 
@@ -84,7 +87,7 @@ research configuration.
 The [continuity investigation](docs/validation/2026-11-11-continuity-investigation.md)
 retains the blocked research campaign, bounded nonresearch diagnostics and a
 proposed recovery decision. Timing metadata was improved, but the mechanism
-remains unresolved and the current fixture revision failed qualification;
+remains unresolved and that earlier fixture revision failed qualification;
 no additional research execution is authorized by that proposal.
 
 The preceding [v3 qualification](docs/validation/2026-11-11-v3-qualification-execution.md)
@@ -94,4 +97,6 @@ synthetically tested and frozen/archived separately. Its single six-case
 nonresearch qualification and independent audits passed in the final environment;
 the allowance is consumed. See the [execution report](docs/validation/2026-11-11-whole-run-qualification-execution.md)
 and [proposed replacement campaign](docs/validation/2026-11-11-replacement-campaign-proposal.md).
-No replacement research campaign or additional research attempts are authorized.
+That replacement campaign was subsequently approved and completed for s001–s019;
+see the [results](docs/validation/2026-11-12-research-v4-01.md). All 23 test slots
+remain pending, and no further collection is authorized by that completed task.

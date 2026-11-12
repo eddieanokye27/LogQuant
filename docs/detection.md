@@ -2,14 +2,17 @@
 
 This milestone implements fitting and raw anomaly scoring, using the existing
 [ingestion](ingestion.md) and [feature/window](features.md) contracts unchanged.
-Only synthetic test models have been fitted. This raw-scoring module supplies
-no alert threshold, research model, performance result or evidence selector.
+A research model has now been fitted on six new healthy training runs; the
+[development result](validation/2026-11-12-research-v4-01.md) retains unsuccessful
+whole-run threshold selection. Synthetic examples below remain implementation
+checks. Raw scoring does not select alert thresholds or build evidence bundles.
 
 The subsequent [threshold milestone](thresholds.md) now provides separate
 development calibration and frozen alert classification. Raw detector artifacts
 and scores retain this contract, including their null `alert_threshold`; the
-separate JSON threshold artifact supplies the decision rule. Only synthetic
-thresholds have been calibrated.
+separate JSON threshold artifact supplies the decision rule. Successful thresholds
+remain synthetic-only; real development schema-2 selection ran unsuccessfully
+and retained its trials without a cutoff.
 
 ## Boundary and training eligibility
 
